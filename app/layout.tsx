@@ -18,7 +18,26 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (typeof window !== 'undefined' && window.fetch) {
+                  var _origFetch = window.fetch;
+                  Object.defineProperty(window, 'fetch', {
+                    get: function() { return _origFetch; },
+                    set: function(val) { _origFetch = val; },
+                    configurable: true,
+                    enumerable: true
+                  });
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

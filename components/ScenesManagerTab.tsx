@@ -34,6 +34,7 @@ import {
   formatSecondsToTimestamp,
   getSceneImageFilename,
 } from '@/lib/timestamp-parser';
+import { generateSceneImage } from '@/lib/gemini-client';
 
 interface ScenesManagerTabProps {
   project: ProjectState;
@@ -92,20 +93,13 @@ export function ScenesManagerTab({
     onUpdateProject({ scenes: updatedScenes });
 
     try {
-      const res = await fetch('/api/gemini/generate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: scene.prompt,
-          sceneNumber: scene.sceneNumber,
-          baseStyle: project.baseStylePrompt,
-          aspectRatio: project.settings.aspectRatio,
-          customApiKey: project.settings.customApiKey,
-        }),
+      const data = await generateSceneImage({
+        prompt: scene.prompt,
+        sceneNumber: scene.sceneNumber,
+        baseStyle: project.baseStylePrompt,
+        aspectRatio: project.settings.aspectRatio,
+        customApiKey: project.settings.customApiKey,
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Generation failed');
 
       const currentList = [...project.scenes];
       currentList[sceneIndex] = {

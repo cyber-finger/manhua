@@ -19,6 +19,7 @@ import {
 import { ProjectState } from '@/lib/types';
 import { formatSecondsToTimestamp, parseTimestampedPrompts } from '@/lib/timestamp-parser';
 import { generateDemoNarrationWav } from '@/lib/audio-synthesizer';
+import { analyzeStoryWithGemini } from '@/lib/gemini-client';
 
 interface ScriptToPromptsTabProps {
   project: ProjectState;
@@ -92,25 +93,16 @@ export function ScriptToPromptsTab({
     setErrorMsg(null);
 
     try {
-      const res = await fetch('/api/gemini/analyze-story', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          story: project.storyScript,
-          audioDuration: project.narrationDuration,
-          customApiKey: project.settings.customApiKey,
-        }),
+      const result = await analyzeStoryWithGemini({
+        story: project.storyScript,
+        audioDuration: project.narrationDuration,
+        customApiKey: project.settings.customApiKey,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to generate prompts');
-      }
-
-      setOutputPromptsText(data.rawText || '');
+      setOutputPromptsText(result.rawText || '');
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || 'Generation failed. Please verify your Gemini API key.');
+      setErrorMsg(err.message || 'Generation failed. Please verify your Gemini API key in Settings.');
     } finally {
       setIsAnalyzing(false);
     }
