@@ -1,0 +1,6 @@
+{
+  "name": "Manhwa Video Production Studio",
+  "description": "AI-powered Manhwa & Anime recap video production studio with strict narration sync, timestamped prompt importer, reference manager, cinematic motion effects, and video rendering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
